@@ -11,9 +11,11 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import unittest
-from utils.config import Config, DRIVER_PATH, DATA_PATH
+from utils.config import Config, DRIVER_PATH, DATA_PATH, REPORT_PATH, TEST_PATH, IMG_PATH
 from utils.log import logger
 from utils.file_reader import ExcelReader
+from BeautifulReport import BeautifulReport
+from lxml import etree
 
 # URL = 'https://www.baidu.com'
 # base_path = os.path.dirname(os.path.abspath(__file__)) + '\..'
@@ -52,6 +54,24 @@ class TestBaiDu(unittest.TestCase):
     locator_su = (By.ID, 'su')
     locator_result = (By.XPATH, '//div[contains(@class, "result")]/h3/a')
 
+    @staticmethod
+    def parse(html, xpath):
+        """
+            解析页面中的元素并返回一个对象
+        :param xpath: 需要获取页面中的元素对应的xpath
+        :param html: 页面的html元素
+        :return:
+        """
+        return etree.HTML(html).xpath(xpath)
+
+    def save_img(self, img_name):
+        """
+            传入一个img_name, 并存储到默认的文件路径下
+        :param img_name:
+        :return:
+        """
+        self.dr.get_screenshot_as_file('{}/{}.png'.format(os.path.abspath(IMG_PATH), img_name))
+
     def sub_setUp(self):
         self.dr = webdriver.Chrome(executable_path=self.driver_path)
         self.dr.get(self.URL)
@@ -59,6 +79,7 @@ class TestBaiDu(unittest.TestCase):
     def sub_tearDown(self):
         self.dr.quit()
 
+    @BeautifulReport.add_test_img('测试报告.png')
     def test_search_0(self):
         # datas = ExcelReader(self.excel).data
         for d in self.datas:
@@ -70,6 +91,7 @@ class TestBaiDu(unittest.TestCase):
                 links = self.dr.find_elements(*self.locator_result)
                 for link in links:
                     logger.info(link.text)
+                    self.save_img('测试报告.png')
                 self.sub_tearDown()
 
         # self.dr.find_element(*self.locator_kw).send_keys('selenium 灰蓝')
@@ -91,7 +113,11 @@ class TestBaiDu(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    test_suite = unittest.defaultTestLoader.discover(TEST_PATH, pattern='test*.py')
+    result = BeautifulReport(test_suite)
+    result.report(filename='测试报告', description='测试deafult报告', log_path=REPORT_PATH)
+
+
 
 
 
