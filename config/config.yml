@@ -6,3 +6,16 @@ log:
     console_level: WARNING
     file_level: DEBUG
     pattern: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+report:
+    verbosity: 2
+    title: 'UI自动化测试报告'
+    description: 'test_report'
+
+mail:
+    title: '百度搜索测试报告'
+    message: '这是今天的测试报告，请查收！'
+    server: 'smtp.163.com'
+    sender: 'XXXXXX@163.com'
+    password: 'XXXXXX'
+    receiver: 'XXXXXX@qq.com'
