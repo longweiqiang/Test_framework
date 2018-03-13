@@ -27,6 +27,7 @@ class TestBaiDuHTTP(unittest.TestCase):
         self.assertIn('百度一下，你就知道', res.text)
 
 
+
 if __name__ == '__main__':
     report = REPORT_PATH + '\\report.html'
     with open(report, 'wb') as f:
